@@ -1,3 +1,19 @@
 Todo list
 
-EDA juypiter notebook
+1. EDA juypiter notebook på datasetet
+
+2. ev tvätta data
+    separera rå data och tvättad data, 2 filer
+
+3. klustring model
+3.1 flera klustrings modeller
+3.1.1 analysera kluster och/med vissa parametrar
+    ex vrf tillhör datapunkt x till kluster y analysera.
+    finns den mönster i klustret vrf vrf inte.
+    behövs mer kluster elr mindre. osv
+
+
+
+3.5 ev en prediktions modell för bara hjärt sjukdom
+
+4. streamlit, sida med kluster info, enkel sida med prediktions modell
