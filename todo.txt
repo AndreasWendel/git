@@ -1,1 +1,3 @@
-EDA
+Todo list
+
+EDA juypiter notebook
