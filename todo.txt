@@ -7,6 +7,8 @@ Todo list
 
 3. klustring model
 3.1 flera klustrings modeller
+K-means, kmodes, and k-prototype
+
 3.1.1 analysera kluster och/med vissa parametrar
     ex vrf tillhör datapunkt x till kluster y analysera.
     finns den mönster i klustret vrf vrf inte.
