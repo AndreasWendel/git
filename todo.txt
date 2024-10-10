@@ -8,6 +8,7 @@ Todo list
 3. klustring model
 3.1 flera klustrings modeller
 K-means, kmodes, and k-prototype
+https://scikit-learn.org/stable/modules/clustering.html
 
 3.1.1 analysera kluster och/med vissa parametrar
     ex vrf tillhör datapunkt x till kluster y analysera.
