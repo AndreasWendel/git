@@ -9,12 +9,8 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 
 # Load the trained model (rfc.pkl)
-<<<<<<< HEAD
-model = joblib.load("rfc_model.pkl")
-=======
 #model = joblib.load("rfc2424.pkl")
 model = joblib.load("rfc.pkl")
->>>>>>> 1e792c5f931982d98301d2e2b7b5f889493207c2
 
 # Title of the Streamlit app
 st.title('PCA + K-Means Clustering and Heart Disease Prediction App')
@@ -165,16 +161,18 @@ input_data = pd.DataFrame({
     'Age_Category_80+': [1 if age_category == "80+" else 0] 
     })
 
-<<<<<<< HEAD
+# Add a button for prediction
+if st.button("Predict Heart Disease"):
+    # Make prediction
+    prediction = model.predict(input_data)
 
-                                                                
-=======
+    # Display the prediction result
+    if prediction[0] == 1:
+        st.success("The model predicts that there is a risk of heart disease.")
+    else:
+        st.success("The model predicts that there is no risk of heart disease.")
+
 #fixa model.pred 
 #fixa inoput data för categoriska data där resterande är 0,0,0,0 osv. ex general_health_exelent
            
-"""
-pred = model.predict(input_data)
-
-
-"""                                                     
->>>>>>> 1e792c5f931982d98301d2e2b7b5f889493207c2
+                                                  
