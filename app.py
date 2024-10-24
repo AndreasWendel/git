@@ -147,6 +147,7 @@ input_data = pd.DataFrame({
     'Diabetes_Yes, but female told only during pregnancy': [1 if diabetes == "Yes, but female told only during pregnancy" else 0],
     'Arthritis_Yes': [1 if arthritis == "Yes" else 0],
     'Sex_Male': [1 if sex == "Male" else 0],
+    'Smoking_History_yes': [1 if smoking_history == "Yes" else 0],
     'Age_Category_25-29': [1 if age_category == "25-29" else 0],
     'Age_Category_30-34': [1 if age_category == "30-34" else 0],
     'Age_Category_35-39': [1 if age_category == "35-39" else 0],
