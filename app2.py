@@ -117,9 +117,12 @@ with tab1:
 
         # Display the prediction result
         if prediction[0] == 1:
-            st.success("The model predicts that there is a risk of heart disease.")
+            st.error("The model predicts that there is a risk of heart disease.")
         else:
             st.success("The model predicts that there is no risk of heart disease.")
+            
+        # Add a disclaimer message
+        st.warning("This prediction is for informational purposes only and does not constitute medical advice. Please consult a healthcare professional for medical advice and diagnosis.")
 
 # --- TAB 2: Clustering ---
 with tab2:
