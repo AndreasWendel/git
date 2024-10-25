@@ -12,15 +12,12 @@ model = joblib.load("rfc.pkl")  # Heart disease prediction model
 hdb_model = joblib.load("hdb_model.pkl")  # Clustering model (pre-trained)
 
 def create_trainset(df):
-    """ Preprocesses the input data by scaling numerical features and combining with categorical data """
-    numerical_columns = ['Height_(cm)', 'Weight_(kg)', 'BMI', 'Alcohol_Consumption', 
-                         'Fruit_Consumption', 'Green_Vegetables_Consumption', 'FriedPotato_Consumption']
-    
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(df[numerical_columns])
-    
-    categorical_columns = df.drop(numerical_columns, axis=1)
-    
+    numerical_columns = ["Height_(cm)", "Weight_(kg)", "BMI", "Alcohol_Consumption", 
+                         "Fruit_Consumption", "Green_Vegetables_Consumption", "FriedPotato_Consumption"]
+
+    scaler = joblib.load("scaler.bin")
+    X_scaled = scaler.transform(df[numerical_columns])
+    categorical_columns = df.drop(numerical_columns, axis=1) 
     full_data = np.hstack([X_scaled, categorical_columns.to_numpy()])
     return full_data
 
