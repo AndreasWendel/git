@@ -38,10 +38,10 @@ with tab1:
     height = st.number_input("Height (cm)", min_value=100, max_value=250, value=170)
     weight = st.number_input("Weight (kg)", min_value=30, max_value=200, value=70)
     bmi = st.number_input("BMI", min_value=10, max_value=50, value=22)
-    alcohol_consumption = st.slider("Alcohol Consumption (times/week)", 0, 7, 2)
-    fruit_consumption = st.slider("Fruit Consumption (times/week)", 0, 7, 3)
-    green_vegetables = st.slider("Green Vegetables Consumption (times/week)", 0, 7, 3)
-    fried_potato = st.slider("Fried Potato Consumption (times/week)", 0, 7, 1)
+    alcohol_consumption = st.slider("During the past 30 days, how many times did you have at least one alcoholic beverage", 0, 30, 2)
+    fruit_consumption = st.slider("How many times do you eat fruit per month", 0, 120, 3)
+    green_vegetables = st.slider("How ofter do you eat green vegetables every month", 0, 128, 3)
+    fried_potato = st.slider("How many times per month do you eat any kind of fried Potatoes", 0, 128, 1)
 
     # General Health
     general_health = st.selectbox("General Health", ["Very Good", "Good", "Fair", "Poor"])
