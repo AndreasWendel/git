@@ -181,7 +181,7 @@ with tab1:
         st.warning("This prediction is for informational purposes only and does not constitute medical advice. Please consult a healthcare professional for medical advice and diagnosis.")
 
 # --- TAB 2: Clustering ---
-with tab2:
+with tab2: 
     st.header("Pre-trained Clustering Results")
 
     # File upload for clustering analysis
@@ -206,9 +206,6 @@ with tab2:
         st.pyplot(sil_Score(n_clusters = clusters_nr, data = data, labels = labels, sill_avg = sillhouette_avg, sill_sample = sillhouette_samples))
              
         # Display the "Cluster" and "Silhouette" columns
-        silhouette_df = data.groupby('Cluster')['Silhouette'].mean().reset_index()
-        silhouette_df.columns = ['Cluster', 'Average_Silhouette']
-        silhouette_df['Data Points'] = silhouette_df['Cluster'].map(data['Cluster'].value_counts().sort_index())
         st.write(silhouette_df)
         
         # Display top 5 clusters by average silhouette score
