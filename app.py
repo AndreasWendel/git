@@ -12,6 +12,61 @@ import matplotlib.cm as cm
 model = joblib.load("rfc.pkl")  # Heart disease prediction model
 hdb_model = joblib.load("hdb_model.pkl")  # Clustering model (pre-trained)
 
+def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
+    fig, (ax1) = plt.subplots(1, 1)
+    fig.set_size_inches(18, 7)
+    ax1.set_xlim([-0.1, 1])
+    ax1.set_ylim([0, len(data) + (n_clusters + 1) * 10])
+
+    silhouette_avg = sill_avg
+
+    sample_silhouette_values = sill_sample
+
+    y_lower = 10
+
+    for i in range(n_clusters):
+        ith_cluster_silhouette_values = sample_silhouette_values[labels == i]
+
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        color = cm.nipy_spectral(float(i) / n_clusters)
+        ax1.fill_betweenx(
+            np.arange(y_lower, y_upper),
+            0,
+            ith_cluster_silhouette_values,
+            facecolor=color,
+            edgecolor=color,
+            alpha=0.7,
+            )
+
+
+        ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+
+            # Compute the new y_lower for next plot
+        y_lower = y_upper + 10  # 10 for the 0 samples
+
+        ax1.set_title("The silhouette plot for the various clusters.")
+        ax1.set_xlabel("The silhouette coefficient values")
+        ax1.set_ylabel("Cluster label")
+
+        # The vertical line for average silhouette score of all the values
+        ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
+
+        ax1.set_yticks([])  # Clear the yaxis labels / ticks
+        ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+
+        plt.suptitle(
+            "Silhouette analysis for HDBSCAN clustering on sample data with n_clusters = %d"
+            % n_clusters,
+            fontsize=14,
+            fontweight="bold",
+        )
+        
+    return fig
+
 def create_trainset(df):
     numerical_columns = ["Height_(cm)", "Weight_(kg)", "BMI", "Alcohol_Consumption", 
                          "Fruit_Consumption", "Green_Vegetables_Consumption", "FriedPotato_Consumption"]
@@ -163,6 +218,13 @@ with tab2:
         plt.ylabel("PCA Component 2")
         plt.colorbar(scatter, label="Cluster")
         st.pyplot(fig)
+        
+        silhouette_df = pd.read_csv("silhouette_df.csv")
+        sillhouette_avg = silhouette_df.iloc[53].iloc[1]
+        sillhouette_samples = data["Silhouette"].to_numpy()
+        clusters_nr = len(data["Cluster"].unique())
+        labels = data["Cluster"]
+        st.pyplot(sil_Score(n_clusters = clusters_nr, data = data, labels = labels, sill_avg = sillhouette_avg, sill_sample = sillhouette_samples))
              
     # Display the "Cluster" and "Silhouette" columns
         silhouette_df = data.groupby('Cluster')['Silhouette'].mean().reset_index()
@@ -198,72 +260,12 @@ image_files = [
     ]
     
 for file_name, caption in image_files:
-        image_path = f"C:/Users/jacob/Documents/Data science projekt/git/Image/{file_name}"  # Absolute path to the images
+        image_path = f"Image/{file_name}"  # Absolute path to the images
         st.image(image_path)
         st.markdown(f'<div class="caption-text">{caption}</div>', unsafe_allow_html=True)
         
-def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
-    fig, (ax1) = plt.subplots(1, 1)
-    fig.set_size_inches(18, 7)
-    ax1.set_xlim([-0.1, 1])
-    ax1.set_ylim([0, len(data) + (n_clusters + 1) * 10])
-
-    silhouette_avg = sill_avg
-
-    sample_silhouette_values = sill_sample
-
-    y_lower = 10
-
-    for i in range(n_clusters):
-        ith_cluster_silhouette_values = sample_silhouette_values[labels == i]
-
-        ith_cluster_silhouette_values.sort()
-
-        size_cluster_i = ith_cluster_silhouette_values.shape[0]
-        y_upper = y_lower + size_cluster_i
-
-        color = cm.nipy_spectral(float(i) / n_clusters)
-        ax1.fill_betweenx(
-            np.arange(y_lower, y_upper),
-            0,
-            ith_cluster_silhouette_values,
-            facecolor=color,
-            edgecolor=color,
-            alpha=0.7,
-            )
-
-
-        ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-
-            # Compute the new y_lower for next plot
-        y_lower = y_upper + 10  # 10 for the 0 samples
-
-        ax1.set_title("The silhouette plot for the various clusters.")
-        ax1.set_xlabel("The silhouette coefficient values")
-        ax1.set_ylabel("Cluster label")
-
-        # The vertical line for average silhouette score of all the values
-        ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
-
-        ax1.set_yticks([])  # Clear the yaxis labels / ticks
-        ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
-
-        plt.suptitle(
-            "Silhouette analysis for HDBSCAN clustering on sample data with n_clusters = %d"
-            % n_clusters,
-            fontsize=14,
-            fontweight="bold",
-        ) 
-        
-silhouette_df = pd.read_csv("silhouette_df.csv")
-
-sillhouette_avg = silhouette_df.iloc[53].iloc[1]
-sillhouette_samples = data["Silhouette"].to_numpy()
-clusters_nr = len(data["Cluster"].unique())
-labels = data["Cluster"]
-
-
-sil_Score(n_clusters = clusters_nr, data = data, labels = labels, sill_avg = sillhouette_avg, sill_sample = sillhouette_samples)       
+ 
+             
     
 # --- TAB 3: Exploratory Data Analysis (EDA) ---
 with tab3:
