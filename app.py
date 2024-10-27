@@ -365,7 +365,8 @@ with tab2:
         age_column = categorical_features[18:-1]
         food_column = numerical_features[3:-2]
         num_profile_column = numerical_features[:3]
-         
+        
+        # Cluster 26
         st.subheader(f"Analysis för Cluster: {chosen_5[0]}") 
         
         st.subheader(f"Data Frame for Cluster {chosen_5[0]}")    
@@ -390,9 +391,101 @@ with tab2:
         st.pyplot(health_heatmap(top_5_cluster_info[0][0],conditions_columns))
             
         
+        # Cluster 45
+        st.subheader(f"Analysis för Cluster: {chosen_5[1]}") 
         
-        # Load and filter significant features data for top 5 clusters
-           
+        st.subheader(f"Data Frame for Cluster {chosen_5[1]}")    
+        st.write(top_5_cluster_info[1][0])
+        
+        st.subheader(f"Statistics numerical features for Cluster {chosen_5[1]}")    
+        st.write(top_5_cluster_info[1][1])
+        
+        st.subheader(f"Statistics catagorical features for Cluster {chosen_5[1]}")    
+        st.write(top_5_cluster_info[1][2])
+        
+        st.pyplot(histplot(food_column,top_5_cluster_info[1][0]))
+        st.pyplot(histplot(num_profile_column,top_5_cluster_info[1][0]))
+        
+        st.pyplot(health_heatmap(top_5_cluster_info[1][0],health_columns))
+        get_excellent_health(top_5_cluster_info[1][0])
+        st.write(top_5_cluster_info[1][0][health_columns].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[1][0],age_column))
+        get_18_24_age(top_5_cluster_info[1][0])
+        st.write(top_5_cluster_info[1][0][age_column].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[1][0],profile_columns))
+        st.pyplot(health_heatmap(top_5_cluster_info[1][0],conditions_columns))
+        
+        # Cluster 40
+        st.subheader(f"Analysis för Cluster: {chosen_5[2]}") 
+        
+        st.subheader(f"Data Frame for Cluster {chosen_5[2]}")    
+        st.write(top_5_cluster_info[2][0])
+        
+        st.subheader(f"Statistics numerical features for Cluster {chosen_5[2]}")    
+        st.write(top_5_cluster_info[2][1])
+        
+        st.subheader(f"Statistics catagorical features for Cluster {chosen_5[2]}")    
+        st.write(top_5_cluster_info[2][2])
+        
+        st.pyplot(histplot(food_column,top_5_cluster_info[2][0]))
+        st.pyplot(histplot(num_profile_column,top_5_cluster_info[2][0]))
+        
+        st.pyplot(health_heatmap(top_5_cluster_info[2][0],health_columns))
+        get_excellent_health(top_5_cluster_info[2][0])
+        st.write(top_5_cluster_info[2][0][health_columns].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[2][0],age_column))
+        get_18_24_age(top_5_cluster_info[2][0])
+        st.write(top_5_cluster_info[2][0][age_column].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[2][0],profile_columns))
+        st.pyplot(health_heatmap(top_5_cluster_info[2][0],conditions_columns)) 
+        
+        # Cluster 16
+        st.subheader(f"Analysis för Cluster: {chosen_5[3]}") 
+        
+        st.subheader(f"Data Frame for Cluster {chosen_5[3]}")    
+        st.write(top_5_cluster_info[3][0])
+        
+        st.subheader(f"Statistics numerical features for Cluster {chosen_5[3]}")    
+        st.write(top_5_cluster_info[3][1])
+        
+        st.subheader(f"Statistics catagorical features for Cluster {chosen_5[3]}")    
+        st.write(top_5_cluster_info[3][2])
+        
+        st.pyplot(histplot(food_column,top_5_cluster_info[3][0]))
+        st.pyplot(histplot(num_profile_column,top_5_cluster_info[3][0]))
+        
+        st.pyplot(health_heatmap(top_5_cluster_info[3][0],health_columns))
+        get_excellent_health(top_5_cluster_info[3][0])
+        st.write(top_5_cluster_info[3][0][health_columns].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[3][0],age_column))
+        get_18_24_age(top_5_cluster_info[3][0])
+        st.write(top_5_cluster_info[3][0][age_column].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[3][0],profile_columns))
+        st.pyplot(health_heatmap(top_5_cluster_info[3][0],conditions_columns))
+        
+        # Cluster 48
+        st.subheader(f"Analysis för Cluster: {chosen_5[4]}") 
+        
+        st.subheader(f"Data Frame for Cluster {chosen_5[4]}")    
+        st.write(top_5_cluster_info[4][0])
+        
+        st.subheader(f"Statistics numerical features for Cluster {chosen_5[4]}")    
+        st.write(top_5_cluster_info[4][1])
+        
+        st.subheader(f"Statistics catagorical features for Cluster {chosen_5[4]}")    
+        st.write(top_5_cluster_info[4][2])
+        
+        st.pyplot(histplot(food_column,top_5_cluster_info[4][0]))
+        st.pyplot(histplot(num_profile_column,top_5_cluster_info[4][0]))
+        
+        st.pyplot(health_heatmap(top_5_cluster_info[4][0],health_columns))
+        get_excellent_health(top_5_cluster_info[4][0])
+        st.write(top_5_cluster_info[4][0][health_columns].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[4][0],age_column))
+        get_18_24_age(top_5_cluster_info[4][0])
+        st.write(top_5_cluster_info[4][0][age_column].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[4][0],profile_columns))
+        st.pyplot(health_heatmap(top_5_cluster_info[4][0],conditions_columns))  
         
 
    
