@@ -190,14 +190,7 @@ with tab2:
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
 
-        # Process the data for clustering
-        processed_data = create_trainset(data)  # Adjust based on your preprocessing function
-
-        # Use the pre-trained clustering model to get existing labels
-        clustering_labels = hdb_model.labels_
-
-        # Add cluster labels to the dataset and show results
-        data['Cluster'] = clustering_labels
+        
         st.write("Clustering completed! Here are the clusters assigned to the data:")
         st.write(data.head())  # Show a preview of the data with clusters
 
