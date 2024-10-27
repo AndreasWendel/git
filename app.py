@@ -190,7 +190,7 @@ with tab2:
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
 
-#Process the data for clustering
+        # Process the data for clustering
         processed_data = create_trainset(data)  # Adjust based on your preprocessing function
 
         # Use the pre-trained clustering model to get existing labels
@@ -201,23 +201,10 @@ with tab2:
         st.write("Clustering completed! Here are the clusters assigned to the data:")
         st.write(data.head())  # Show a preview of the data with clusters
 
-#Display the counts for each cluster
+        # Display the counts for each cluster
         cluster_counts = data['Cluster'].value_counts()
         st.write("Cluster Distribution:")
         st.write(cluster_counts)
-
-        # Perform PCA to reduce dimensions for visualization (2D)
-        pca = PCA(n_components=2)
-        pca_components = pca.fit_transform(processed_data)
-
-        # Show a scatter plot of the first two PCA components with cluster coloring
-        st.subheader("PCA Scatter Plot of Clusters")
-        fig, ax = plt.subplots()
-        scatter = ax.scatter(pca_components[:, 0], pca_components[:, 1], c=clustering_labels, cmap='viridis', alpha=0.7)
-        plt.xlabel("PCA Component 1")
-        plt.ylabel("PCA Component 2")
-        plt.colorbar(scatter, label="Cluster")
-        st.pyplot(fig)
         
         silhouette_df = pd.read_csv("silhouette_df.csv")
         sillhouette_avg = silhouette_df.iloc[53].iloc[1]
@@ -226,16 +213,22 @@ with tab2:
         labels = data["Cluster"]
         st.pyplot(sil_Score(n_clusters = clusters_nr, data = data, labels = labels, sill_avg = sillhouette_avg, sill_sample = sillhouette_samples))
              
-    # Display the "Cluster" and "Silhouette" columns
+        # Display the "Cluster" and "Silhouette" columns
         silhouette_df = data.groupby('Cluster')['Silhouette'].mean().reset_index()
         silhouette_df.columns = ['Cluster', 'Average_Silhouette']
         silhouette_df['Data Points'] = silhouette_df['Cluster'].map(data['Cluster'].value_counts().sort_index())
         st.write(silhouette_df)
+        
+        # Display top 5 clusters by average silhouette score
+        st.subheader("Top 5 Clusters by Average Silhouette Score")
+        top_5_silhouettes = silhouette_df[silhouette_df["Average_Silhouette"] > 0.4]["Average_Silhouette"].sort_values(ascending=False).head(5)
+        st.write(top_5_silhouettes)
+        
 
-    # Display images with comments
+# Display images with comments
 st.subheader("Silhouette Analysis Images")
 
-    # Inject CSS to style the caption text to white
+# Inject CSS to style the caption text to white
 st.markdown("""
         <style>
         .caption-text {
@@ -249,7 +242,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 image_files = [
-        ("Silhouette HDBSCAN.png", "Silhouette analysis for HDBSCAN clustering."),
         ("Silhouette kmeans 3 cluster.png", "Silhouette analysis for KMeans clustering with 3 clusters."),
         ("Silhouette kmeans 5 cluster.png", "Silhouette analysis for KMeans clustering with 5 clusters."),
         ("Silhouette kmeans 10 cluster.png", "Silhouette analysis for KMeans clustering with 10 clusters."),
