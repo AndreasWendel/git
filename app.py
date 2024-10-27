@@ -181,7 +181,6 @@ with tab1:
         st.warning("This prediction is for informational purposes only and does not constitute medical advice. Please consult a healthcare professional for medical advice and diagnosis.")
 
 # --- TAB 2: Clustering ---
-tab2 = st.container()  # Creates container for clustering tab
 with tab2:
     st.header("Pre-trained Clustering Results")
 
@@ -218,36 +217,36 @@ with tab2:
         st.write(top_5_silhouettes)
         
 
-# Display images with comments
-st.subheader("Silhouette Analysis Images")
+    # Display images with comments
+    st.subheader("Silhouette Analysis Images")
 
-# Inject CSS to style the caption text to white
-st.markdown("""
-        <style>
-        .caption-text {
-            color: white;
-            font-size: 16px;
-            margin-top: -10px; /* Closer to the image above */
-            margin-bottom: 20px; /* Adds space to the image below */
-            text-align: center; /* Center-align the text */
-        }
-        </style>
-    """, unsafe_allow_html=True)
+    # Inject CSS to style the caption text to white
+    st.markdown("""
+            <style>
+            .caption-text {
+                color: white;
+                font-size: 16px;
+                margin-top: -10px; /* Closer to the image above */
+                margin-bottom: 20px; /* Adds space to the image below */
+                text-align: center; /* Center-align the text */
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
-image_files = [
-        ("Silhouette kmeans 3 cluster.png", "Silhouette analysis for KMeans clustering with 3 clusters."),
-        ("Silhouette kmeans 5 cluster.png", "Silhouette analysis for KMeans clustering with 5 clusters."),
-        ("Silhouette kmeans 10 cluster.png", "Silhouette analysis for KMeans clustering with 10 clusters."),
-        ("Silhouette kmeans 15 cluster.png", "Silhouette analysis for KMeans clustering with 15 clusters."),
-        ("Silhouette kmeans 20 cluster.png", "Silhouette analysis for KMeans clustering with 20 clusters."),
-        ("Silhouette kmeans 30 cluster.png", "Silhouette analysis for KMeans clustering with 30 clusters."),
-        ("Silhouette kmeans 35 cluster.png", "Silhouette analysis for KMeans clustering with 35 clusters.")
-    ]
-    
-for file_name, caption in image_files:
-        image_path = f"Image/{file_name}"  # Absolute path to the images
-        st.image(image_path)
-        st.markdown(f'<div class="caption-text">{caption}</div>', unsafe_allow_html=True)
+    image_files = [
+            ("Silhouette kmeans 3 cluster.png", "Silhouette analysis for KMeans clustering with 3 clusters."),
+            ("Silhouette kmeans 5 cluster.png", "Silhouette analysis for KMeans clustering with 5 clusters."),
+            ("Silhouette kmeans 10 cluster.png", "Silhouette analysis for KMeans clustering with 10 clusters."),
+            ("Silhouette kmeans 15 cluster.png", "Silhouette analysis for KMeans clustering with 15 clusters."),
+            ("Silhouette kmeans 20 cluster.png", "Silhouette analysis for KMeans clustering with 20 clusters."),
+            ("Silhouette kmeans 30 cluster.png", "Silhouette analysis for KMeans clustering with 30 clusters."),
+            ("Silhouette kmeans 35 cluster.png", "Silhouette analysis for KMeans clustering with 35 clusters.")
+        ]
+        
+    for file_name, caption in image_files:
+            image_path = f"Image/{file_name}"  # Absolute path to the images
+            st.image(image_path)
+            st.markdown(f'<div class="caption-text">{caption}</div>', unsafe_allow_html=True)
         
  
              
