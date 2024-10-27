@@ -6,6 +6,7 @@ import numpy as np
 import joblib
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
+import matplotlib.cm as cm
 
 # Load the trained models
 model = joblib.load("rfc.pkl")  # Heart disease prediction model
@@ -125,6 +126,7 @@ with tab1:
         st.warning("This prediction is for informational purposes only and does not constitute medical advice. Please consult a healthcare professional for medical advice and diagnosis.")
 
 # --- TAB 2: Clustering ---
+tab2 = st.container()  # Creates container for clustering tab
 with tab2:
     st.header("Pre-trained Clustering Results")
 
@@ -132,10 +134,10 @@ with tab2:
     uploaded_file = st.file_uploader("Upload your dataset for clustering (CSV)", type=['csv'])
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
-        
-        # Process the data for clustering
-        processed_data = create_trainset(data)
-        
+
+#Process the data for clustering
+        processed_data = create_trainset(data)  # Adjust based on your preprocessing function
+
         # Use the pre-trained clustering model to get existing labels
         clustering_labels = hdb_model.labels_
 
@@ -143,8 +145,8 @@ with tab2:
         data['Cluster'] = clustering_labels
         st.write("Clustering completed! Here are the clusters assigned to the data:")
         st.write(data.head())  # Show a preview of the data with clusters
-        
-        # Display the counts for each cluster
+
+#Display the counts for each cluster
         cluster_counts = data['Cluster'].value_counts()
         st.write("Cluster Distribution:")
         st.write(cluster_counts)
@@ -161,7 +163,108 @@ with tab2:
         plt.ylabel("PCA Component 2")
         plt.colorbar(scatter, label="Cluster")
         st.pyplot(fig)
+             
+    # Display the "Cluster" and "Silhouette" columns
+        silhouette_df = data.groupby('Cluster')['Silhouette'].mean().reset_index()
+        silhouette_df.columns = ['Cluster', 'Average_Silhouette']
+        silhouette_df['Data Points'] = silhouette_df['Cluster'].map(data['Cluster'].value_counts().sort_index())
+        st.write(silhouette_df)
 
+    # Display images with comments
+st.subheader("Silhouette Analysis Images")
+
+    # Inject CSS to style the caption text to white
+st.markdown("""
+        <style>
+        .caption-text {
+            color: white;
+            font-size: 16px;
+            margin-top: -10px; /* Closer to the image above */
+            margin-bottom: 20px; /* Adds space to the image below */
+            text-align: center; /* Center-align the text */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+image_files = [
+        ("Silhouette HDBSCAN.png", "Silhouette analysis for HDBSCAN clustering."),
+        ("Silhouette kmeans 3 cluster.png", "Silhouette analysis for KMeans clustering with 3 clusters."),
+        ("Silhouette kmeans 5 cluster.png", "Silhouette analysis for KMeans clustering with 5 clusters."),
+        ("Silhouette kmeans 10 cluster.png", "Silhouette analysis for KMeans clustering with 10 clusters."),
+        ("Silhouette kmeans 15 cluster.png", "Silhouette analysis for KMeans clustering with 15 clusters."),
+        ("Silhouette kmeans 20 cluster.png", "Silhouette analysis for KMeans clustering with 20 clusters."),
+        ("Silhouette kmeans 30 cluster.png", "Silhouette analysis for KMeans clustering with 30 clusters."),
+        ("Silhouette kmeans 35 cluster.png", "Silhouette analysis for KMeans clustering with 35 clusters.")
+    ]
+    
+for file_name, caption in image_files:
+        image_path = f"C:/Users/jacob/Documents/Data science projekt/git/Image/{file_name}"  # Absolute path to the images
+        st.image(image_path)
+        st.markdown(f'<div class="caption-text">{caption}</div>', unsafe_allow_html=True)
+        
+def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
+    fig, (ax1) = plt.subplots(1, 1)
+    fig.set_size_inches(18, 7)
+    ax1.set_xlim([-0.1, 1])
+    ax1.set_ylim([0, len(data) + (n_clusters + 1) * 10])
+
+    silhouette_avg = sill_avg
+
+    sample_silhouette_values = sill_sample
+
+    y_lower = 10
+
+    for i in range(n_clusters):
+        ith_cluster_silhouette_values = sample_silhouette_values[labels == i]
+
+        ith_cluster_silhouette_values.sort()
+
+        size_cluster_i = ith_cluster_silhouette_values.shape[0]
+        y_upper = y_lower + size_cluster_i
+
+        color = cm.nipy_spectral(float(i) / n_clusters)
+        ax1.fill_betweenx(
+            np.arange(y_lower, y_upper),
+            0,
+            ith_cluster_silhouette_values,
+            facecolor=color,
+            edgecolor=color,
+            alpha=0.7,
+            )
+
+
+        ax1.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+
+            # Compute the new y_lower for next plot
+        y_lower = y_upper + 10  # 10 for the 0 samples
+
+        ax1.set_title("The silhouette plot for the various clusters.")
+        ax1.set_xlabel("The silhouette coefficient values")
+        ax1.set_ylabel("Cluster label")
+
+        # The vertical line for average silhouette score of all the values
+        ax1.axvline(x=silhouette_avg, color="red", linestyle="--")
+
+        ax1.set_yticks([])  # Clear the yaxis labels / ticks
+        ax1.set_xticks([-0.1, 0, 0.2, 0.4, 0.6, 0.8, 1])
+
+        plt.suptitle(
+            "Silhouette analysis for HDBSCAN clustering on sample data with n_clusters = %d"
+            % n_clusters,
+            fontsize=14,
+            fontweight="bold",
+        ) 
+        
+silhouette_df = pd.read_csv("silhouette_df.csv")
+
+sillhouette_avg = silhouette_df.iloc[53].iloc[1]
+sillhouette_samples = data["Silhouette"].to_numpy()
+clusters_nr = len(data["Cluster"].unique())
+labels = data["Cluster"]
+
+
+sil_Score(n_clusters = clusters_nr, data = data, labels = labels, sill_avg = sillhouette_avg, sill_sample = sillhouette_samples)       
+    
 # --- TAB 3: Exploratory Data Analysis (EDA) ---
 with tab3:
     st.header("Exploratory Data Analysis (EDA)")
@@ -187,6 +290,7 @@ with tab3:
         fig, ax = plt.subplots(figsize=(16, 12))
         df.hist(bins=20, ax=ax)
         st.pyplot(fig)
+        st.write("These histograms show the distributions of each numerical column, helping identify skewness and spread.")
 
         # Boxplots of numerical features
         st.subheader("Boxplots of Numerical Columns")
@@ -196,6 +300,7 @@ with tab3:
             sns.boxplot(x=df[col], ax=ax)
             plt.title(f"Boxplot of {col}")
             st.pyplot(fig)
+            st.write(f"The boxplot for `{col}` displays its distribution, central tendency, and any potential outliers.")
 
         # Count plots for categorical variables
         st.subheader("Categorical Variable Distributions")
@@ -205,6 +310,7 @@ with tab3:
             sns.countplot(x=col, data=df, ax=ax)
             plt.title(f"Count Plot of {col}")
             st.pyplot(fig)
+            st.write(f"The count plot for `{col}` shows the frequency distribution of each category in this variable.")
 
         # Handle categorical variables before correlation
         st.subheader("Correlation Heatmap")
@@ -252,6 +358,7 @@ with tab3:
         sns.heatmap(corr, annot=True, cmap='coolwarm', ax=ax)
         plt.title("Correlation Heatmap")
         st.pyplot(fig)
+        st.write("The heatmap above shows the correlations between numerical variables, highlighting relationships and potential multicollinearity.")
 
         # --- Additional Plot 1: Relationship between disease conditions and selected variables ---
         st.subheader("Relationship between Disease Conditions and Selected Variables")
@@ -266,6 +373,7 @@ with tab3:
                 plt.title(f'Relationship between {variable} and {disease}')
                 plt.xticks(rotation=90)
                 st.pyplot(fig)
+                st.write(f"This plot explores the relationship between `{variable}` and `{disease}`, showing the distribution of disease status across different categories of `{variable}`.")
 
         # --- Additional Plot 2: Correlation with Heart Disease ---
         st.subheader("Correlation with Heart Disease")
@@ -282,11 +390,9 @@ with tab3:
             # Sort correlation values in descending order
             target_corr_sorted = target_corr.sort_values(ascending=False)
 
-            # Plot a heatmap of the correlations with Heart_Disease
             fig, ax = plt.subplots(figsize=(5, 10))
             sns.heatmap(target_corr_sorted.to_frame(), cmap="coolwarm", annot=True, fmt='.2f', cbar=False, ax=ax)
             plt.title(f'Correlation with {target_variable}')
             plt.tight_layout()
-
-            # Show the plot
             st.pyplot(fig)
+            st.write("This heatmap specifically shows the correlation of each variable with `Heart Disease`, helping identify factors with the strongest associations.")
