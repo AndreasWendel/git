@@ -12,11 +12,6 @@ import matplotlib.cm as cm
 model = joblib.load("rfc.pkl")  # Heart disease prediction model
 hdb_model = joblib.load("hdb_model.pkl")  # Clustering model (pre-trained)
 
-def analys_cluster(cluster_nr):
-    stat_num, df, stat_cat = [data[data["Cluster"] == cluster_nr].describe(),
-               data[data["Cluster"] == cluster_nr],
-               data[data["Cluster"] == cluster_nr].describe(include="bool")]
-    return df,stat_num,stat_cat
 
 def signi_feature(cluster_numbers):
     filtered_significant_df = significant_df[significant_df['Cluster'].isin(cluster_numbers)]
@@ -27,6 +22,65 @@ def signi_feature(cluster_numbers):
         significant_features = data[data["P-value"] < 0.05][["Feature", "Statistic", "P-value", "Test type"]]
         st.write(significant_features)
         st.markdown("<hr>", unsafe_allow_html=True)  # Divider line for readability
+        
+def health_heatmap(df, columns):
+    health_proportion = df[columns].apply(lambda x: x.value_counts(normalize=True).get(True, 0))
+
+    # Plot the heatmap
+    fig = plt.figure(figsize=(10, 5))
+    sns.heatmap(health_proportion.to_frame().T, annot=True, cmap='coolwarm', cbar_kws={'label': 'Proportion of True'})
+    plt.title("Proportion of 'True' in General Health Features")
+    plt.show()
+    return fig
+
+def histplot(column,df):
+    fig = plt.figure(figsize=(12, 8))
+    for col in column:
+        sns.histplot(df[col], kde=True, label=col, bins=15, alpha=0.80)
+
+    plt.title("Distribution of Food Consumption Features (Histogram)")
+    plt.xlabel("Consumption Level")
+    plt.ylabel("Frequency")
+    plt.legend(title="Food Type")
+    plt.show()
+    return fig
+    
+def plot_dist(df,feature):
+    health_distribution = df[feature].value_counts()
+
+    # Plotting the distribution as a bar plot
+    fig = plt.figure(figsize=(8, 5))
+    health_distribution.plot(kind='bar', color=["skyblue"])
+    plt.title('Distribution of General Health Fair')
+    plt.xlabel('General Health Fair')
+    plt.ylabel('Count')
+    plt.xticks(rotation=0)
+    plt.show()
+    return fig
+    
+def get_excellent_health(df):
+    temp = df
+    count_false_health = temp[(temp['General_Health_Fair'] == False) & 
+                              (temp['General_Health_Good'] == False) & 
+                              (temp['General_Health_Very Good'] == False) & 
+                              (temp['General_Health_Poor'] == False)].shape[0]
+    st.write(f"General_Health_Excellent: {count_false_health}")
+    
+def get_18_24_age(df):
+    temp = df
+    count_false = temp[(temp[age_column[0]] == False) & 
+                        (temp[age_column[1]] == False) & 
+                        (temp[age_column[2]] == False) & 
+                        (temp[age_column[3]] == False) & 
+                        (temp[age_column[4]] == False) & 
+                        (temp[age_column[5]] == False) & 
+                        (temp[age_column[6]] == False) & 
+                        (temp[age_column[7]] == False) & 
+                        (temp[age_column[8]] == False) &
+                        (temp[age_column[9]] == False) &
+                        (temp[age_column[10]] == False) &
+                        (temp[age_column[11]] == False)].shape[0]
+    st.write(f"Age_Category_18_24: {count_false}")
 
 def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
     fig, (ax1) = plt.subplots(1, 1)
@@ -93,6 +147,7 @@ def create_trainset(df):
     categorical_columns = df.drop(numerical_columns, axis=1) 
     full_data = np.hstack([X_scaled, categorical_columns.to_numpy()])
     return full_data
+
 
 # Title of the Streamlit app
 st.title('Heart Disease Prediction, Clustering, and EDA App')
@@ -205,7 +260,13 @@ with tab2:
     uploaded_file = st.file_uploader("Upload your dataset for clustering (CSV)", type=['csv'])
     if uploaded_file is not None:
         data = pd.read_csv(uploaded_file)
+        clustered_data = pd.read_csv("clustered_data.csv")
 
+        def analys_cluster(cluster_nr):
+            stat_num, df, stat_cat = [clustered_data[clustered_data["Cluster"] == cluster_nr].describe(),
+                                      clustered_data[clustered_data["Cluster"] == cluster_nr],
+                                      clustered_data[clustered_data["Cluster"] == cluster_nr].describe(include="bool")]
+            return df,stat_num,stat_cat
         
         st.write("First 5 rows of the dataset")
         st.write(data.head())  # Show a preview of the data with clusters
@@ -224,22 +285,53 @@ with tab2:
         clusters_nr = len(data["Cluster"].unique())
         labels = data["Cluster"]
         st.pyplot(sil_Score(n_clusters = clusters_nr, data = data, labels = labels, sill_avg = sillhouette_avg, sill_sample = sillhouette_samples))
+        
+         # Display images with comments
+        st.subheader("Silhouette Analysis Images")
+
+        # Inject CSS to style the caption text to white
+        st.markdown("""
+                <style>
+                .caption-text {
+                    color: white;
+                    font-size: 16px;
+                    margin-top: -10px; /* Closer to the image above */
+                    margin-bottom: 20px; /* Adds space to the image below */
+                    text-align: center; /* Center-align the text */
+                }
+                </style>
+            """, unsafe_allow_html=True)
+
+        image_files = [
+                ("Silhouette kmeans 3 cluster.png", "Silhouette analysis for KMeans clustering with 3 clusters."),
+                ("Silhouette kmeans 5 cluster.png", "Silhouette analysis for KMeans clustering with 5 clusters."),
+                ("Silhouette kmeans 10 cluster.png", "Silhouette analysis for KMeans clustering with 10 clusters."),
+                ("Silhouette kmeans 15 cluster.png", "Silhouette analysis for KMeans clustering with 15 clusters."),
+                ("Silhouette kmeans 20 cluster.png", "Silhouette analysis for KMeans clustering with 20 clusters."),
+                ("Silhouette kmeans 30 cluster.png", "Silhouette analysis for KMeans clustering with 30 clusters."),
+                ("Silhouette kmeans 35 cluster.png", "Silhouette analysis for KMeans clustering with 35 clusters.")
+            ]
+            
+        for file_name, caption in image_files:
+                image_path = f"Image/{file_name}"  # Absolute path to the images
+                st.image(image_path)
+                st.markdown(f'<div class="caption-text">{caption}</div>', unsafe_allow_html=True)
              
         # Display the "Cluster" and "Silhouette" columns
+        st.subheader("Average Silhouette Score data")
         st.write(silhouette_df)
         
         # Display top 5 clusters by average silhouette score
         st.subheader("Top 5 Clusters by Average Silhouette Score")
-        top_5_silhouettes = silhouette_df[silhouette_df["Average_Silhouette"] > 0.4]["Average_Silhouette"].sort_values(ascending=False).head(5)
+        top_5_silhouettes = silhouette_df[["Cluster","Average_Silhouette","Data Points"]].sort_values(by=["Average_Silhouette"],ascending=False).head(5)
         st.write(top_5_silhouettes)
         
         # Display significant features for only the top 5 clusters
         st.subheader("Significant Features by Top 5 Clusters (p < 0.05)")
-        top_5_clusters = top_5_silhouettes.index.tolist()  # Get the indices of the top 5 clusters
+        top_5_clusters = top_5_silhouettes["Cluster"].astype(int).tolist()  # Get the indices of the top 5 clusters
         
-        # Load and filter significant features data for top 5 clusters
         significant_df = pd.read_csv("significant_features_results.csv")
-        top_5_significant_df = significant_df[significant_df["Cluster"].isin(top_5_clusters)]
+        top_5_significant_df = significant_df[significant_df["Cluster"].isin(top_5_clusters)] 
         
         # Group by Cluster and display significant features
         grouped_significant_df = top_5_significant_df.groupby("Cluster")
@@ -249,38 +341,61 @@ with tab2:
             st.write(significant_features)
             st.markdown("<hr>", unsafe_allow_html=True)  # Divider line for readability
             
+            
+        sil_filter = silhouette_df.loc[silhouette_df["Data Points"] > 20, ["Cluster", "Average_Silhouette", "Data Points"]].sort_values(by="Average_Silhouette", ascending=False)
+        
+        st.subheader("stop")
+        
+        chosen_5 = sil_filter["Cluster"].head(5).astype(int).tolist()
+        
+        signi_feature(chosen_5)
+        
+        
+        top_5_cluster_info = []
+        for cluster in chosen_5:
+            top_5_cluster_info.append(analys_cluster(cluster))
+    
+            
+        categorical_features = clustered_data.select_dtypes(include=['bool']).columns.tolist()
+        numerical_features = clustered_data.drop(categorical_features, axis=1).columns.tolist()
+        health_columns = categorical_features[:4]
+        checkup_column = categorical_features[4:8]
+        conditions_columns = categorical_features[9:17]
+        profile_columns = [categorical_features[8], categorical_features[17], categorical_features[-1]]
+        age_column = categorical_features[18:-1]
+        food_column = numerical_features[3:-2]
+        num_profile_column = numerical_features[:3]
+         
+        st.subheader(f"Analysis för Cluster: {chosen_5[0]}") 
+        
+        st.subheader(f"Data Frame for Cluster {chosen_5[0]}")    
+        st.write(top_5_cluster_info[0][0])
+        
+        st.subheader(f"Statistics numerical features for Cluster {chosen_5[0]}")    
+        st.write(top_5_cluster_info[0][1])
+        
+        st.subheader(f"Statistics catagorical features for Cluster {chosen_5[0]}")    
+        st.write(top_5_cluster_info[0][2])
+        
+        st.pyplot(histplot(food_column,top_5_cluster_info[0][0]))
+        st.pyplot(histplot(num_profile_column,top_5_cluster_info[0][0]))
+        
+        st.pyplot(health_heatmap(top_5_cluster_info[0][0],health_columns))
+        get_excellent_health(top_5_cluster_info[0][0])
+        st.write(top_5_cluster_info[0][0][health_columns].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[0][0],age_column))
+        get_18_24_age(top_5_cluster_info[0][0])
+        st.write(top_5_cluster_info[0][0][age_column].sum())
+        st.pyplot(health_heatmap(top_5_cluster_info[0][0],profile_columns))
+        st.pyplot(health_heatmap(top_5_cluster_info[0][0],conditions_columns))
+            
+        
+        
+        # Load and filter significant features data for top 5 clusters
+           
         
 
-    # Display images with comments
-    st.subheader("Silhouette Analysis Images")
-
-    # Inject CSS to style the caption text to white
-    st.markdown("""
-            <style>
-            .caption-text {
-                color: white;
-                font-size: 16px;
-                margin-top: -10px; /* Closer to the image above */
-                margin-bottom: 20px; /* Adds space to the image below */
-                text-align: center; /* Center-align the text */
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
-    image_files = [
-            ("Silhouette kmeans 3 cluster.png", "Silhouette analysis for KMeans clustering with 3 clusters."),
-            ("Silhouette kmeans 5 cluster.png", "Silhouette analysis for KMeans clustering with 5 clusters."),
-            ("Silhouette kmeans 10 cluster.png", "Silhouette analysis for KMeans clustering with 10 clusters."),
-            ("Silhouette kmeans 15 cluster.png", "Silhouette analysis for KMeans clustering with 15 clusters."),
-            ("Silhouette kmeans 20 cluster.png", "Silhouette analysis for KMeans clustering with 20 clusters."),
-            ("Silhouette kmeans 30 cluster.png", "Silhouette analysis for KMeans clustering with 30 clusters."),
-            ("Silhouette kmeans 35 cluster.png", "Silhouette analysis for KMeans clustering with 35 clusters.")
-        ]
-        
-    for file_name, caption in image_files:
-            image_path = f"Image/{file_name}"  # Absolute path to the images
-            st.image(image_path)
-            st.markdown(f'<div class="caption-text">{caption}</div>', unsafe_allow_html=True)
+   
         
  
              
