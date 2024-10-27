@@ -12,6 +12,22 @@ import matplotlib.cm as cm
 model = joblib.load("rfc.pkl")  # Heart disease prediction model
 hdb_model = joblib.load("hdb_model.pkl")  # Clustering model (pre-trained)
 
+def analys_cluster(cluster_nr):
+    stat_num, df, stat_cat = [data[data["Cluster"] == cluster_nr].describe(),
+               data[data["Cluster"] == cluster_nr],
+               data[data["Cluster"] == cluster_nr].describe(include="bool")]
+    return df,stat_num,stat_cat
+
+def signi_feature(cluster_numbers):
+    filtered_significant_df = significant_df[significant_df['Cluster'].isin(cluster_numbers)]
+    grouped_significant_df = filtered_significant_df.groupby("Cluster")
+    
+    for cluster, data in grouped_significant_df:
+        st.write(f"**Cluster {cluster} - Significant Features (p < 0.05):**")
+        significant_features = data[data["P-value"] < 0.05][["Feature", "Statistic", "P-value", "Test type"]]
+        st.write(significant_features)
+        st.markdown("<hr>", unsafe_allow_html=True)  # Divider line for readability
+
 def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
     fig, (ax1) = plt.subplots(1, 1)
     fig.set_size_inches(18, 7)
@@ -66,6 +82,7 @@ def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
         )
         
     return fig
+
 
 def create_trainset(df):
     numerical_columns = ["Height_(cm)", "Weight_(kg)", "BMI", "Alcohol_Consumption", 
@@ -190,8 +207,11 @@ with tab2:
         data = pd.read_csv(uploaded_file)
 
         
-        st.write("Clustering completed! Here are the clusters assigned to the data:")
+        st.write("First 5 rows of the dataset")
         st.write(data.head())  # Show a preview of the data with clusters
+        
+        st.write("HDBSCAN is a density-based clustering method that can identify clusters of varying densities as well as detect noise (outliers) in the dataset.")
+        st.write("KMeans is a clustering method that divides data into a specified number of clusters (K) based on feature similarity.")
 
         # Display the counts for each cluster
         cluster_counts = data['Cluster'].value_counts()
@@ -212,6 +232,23 @@ with tab2:
         st.subheader("Top 5 Clusters by Average Silhouette Score")
         top_5_silhouettes = silhouette_df[silhouette_df["Average_Silhouette"] > 0.4]["Average_Silhouette"].sort_values(ascending=False).head(5)
         st.write(top_5_silhouettes)
+        
+        # Display significant features for only the top 5 clusters
+        st.subheader("Significant Features by Top 5 Clusters (p < 0.05)")
+        top_5_clusters = top_5_silhouettes.index.tolist()  # Get the indices of the top 5 clusters
+        
+        # Load and filter significant features data for top 5 clusters
+        significant_df = pd.read_csv("significant_features_results.csv")
+        top_5_significant_df = significant_df[significant_df["Cluster"].isin(top_5_clusters)]
+        
+        # Group by Cluster and display significant features
+        grouped_significant_df = top_5_significant_df.groupby("Cluster")
+        for cluster, data in grouped_significant_df:
+            st.write(f"**Cluster {cluster} - Significant Features (p < 0.05):**")
+            significant_features = data[data["P-value"] < 0.05][["Feature", "Statistic", "P-value", "Test type"]]
+            st.write(significant_features)
+            st.markdown("<hr>", unsafe_allow_html=True)  # Divider line for readability
+            
         
 
     # Display images with comments
@@ -347,7 +384,8 @@ with tab3:
         st.subheader("Relationship between Disease Conditions and Selected Variables")
         
         selected_variables = ['General_Health', 'Exercise', 'Sex', 'Age_Category', 'Smoking_History']
-        disease_conditions = ['Heart_Disease', 'Skin_Cancer', 'Other_Cancer', 'Diabetes', 'Arthritis']
+        disease_conditions = ['Heart_Disease', 'Skin_Cancer', 'Other_Cancer', 'Diabetes']
+        Arthritis = ['Arthritis']
 
         for disease in disease_conditions:
             for variable in selected_variables:
@@ -358,6 +396,17 @@ with tab3:
                 st.pyplot(fig)
                 st.write(f"This plot explores the relationship between `{variable}` and `{disease}`, showing the distribution of disease status across different categories of `{variable}`.")
 
+        # Only for Arthritis
+        st.write(f"The Yes and No bar switch colors")
+        for disease in  Arthritis:
+            for variable in selected_variables:
+                fig, ax = plt.subplots(figsize=(10, 4))
+                sns.countplot(data=df, x=variable, hue=disease, ax=ax)
+                plt.title(f'Relationship between {variable} and {disease}')
+                plt.xticks(rotation=90)
+                st.pyplot(fig)
+                st.write(f"This plot explores the relationship between `{variable}` and `{disease}`, showing the distribution of disease status across different categories of `{variable}`.")
+        
         # --- Additional Plot 2: Correlation with Heart Disease ---
         st.subheader("Correlation with Heart Disease")
 
