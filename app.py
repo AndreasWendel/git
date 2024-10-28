@@ -29,7 +29,7 @@ def health_heatmap(df, columns):
     # Plot the heatmap
     fig = plt.figure(figsize=(10, 5))
     sns.heatmap(health_proportion.to_frame().T, annot=True, cmap='coolwarm', cbar_kws={'label': 'Proportion of True'})
-    plt.title("Proportion of 'True' in General Health Features")
+    plt.title("Proportion of 'True'")
     plt.show()
     return fig
 
@@ -38,7 +38,7 @@ def histplot(column,df):
     for col in column:
         sns.histplot(df[col], kde=True, label=col, bins=15, alpha=0.80)
 
-    plt.title("Distribution of Food Consumption Features (Histogram)")
+    plt.title("Distribution of Features (Histogram)")
     plt.xlabel("Consumption Level")
     plt.ylabel("Frequency")
     plt.legend(title="Food Type")
@@ -51,8 +51,8 @@ def plot_dist(df,feature):
     # Plotting the distribution as a bar plot
     fig = plt.figure(figsize=(8, 5))
     health_distribution.plot(kind='bar', color=["skyblue"])
-    plt.title('Distribution of General Health Fair')
-    plt.xlabel('General Health Fair')
+    plt.title('Distribution')
+    plt.xlabel(feature)
     plt.ylabel('Count')
     plt.xticks(rotation=0)
     plt.show()
@@ -81,6 +81,49 @@ def get_18_24_age(df):
                         (temp[age_column[10]] == False) &
                         (temp[age_column[11]] == False)].shape[0]
     st.write(f"Age_Category_18_24: {count_false}")
+    
+def get_Checkup_never(df):
+    temp = df
+    count_false = temp[(temp["Checkup_Within the past year"] == False) & 
+                        (temp["Checkup_Within the past year"] == False) & 
+                        (temp["Checkup_Within the past 5 years"] == False) & 
+                        (temp["Checkup_5 or more years ago"] == False)].shape[0]
+    st.write(f"Checkup_never: {count_false}")
+
+def plot_bmi_cate(df):
+    """plot bmi categorized
+    bmi < 18.5:         Underweight
+    18.5 <= bmi < 24.9: Normal weight
+    25.0 <= bmi < 29.9: Overweight
+    29.9 <  bmi:        Obesity
+    Args:
+        df (pd.Dataframe): with BMi
+    """
+    
+    def categorize_bmi(bmi):
+        if bmi < 18.5:
+            return 'Underweight'
+        elif 18.5 <= bmi < 24.9:
+            return 'Normal weight'
+        elif 25.0 <= bmi < 29.9:
+            return 'Overweight'
+        else:
+            return 'Obesity'
+
+    x = df
+    
+    # Apply categorization to the DataFrame
+    x.loc[:, "BMI_Category"] = x["BMI"].apply(categorize_bmi)
+
+    # Plot the distribution of BMI categories
+    fig = plt.figure(figsize=(10, 6))
+    sns.countplot(data=df, x='BMI_Category', hue='BMI_Category', palette="viridis", order=['Underweight', 'Normal weight', 'Overweight', 'Obesity'], legend=False)
+    plt.xlabel('BMI Category')
+    plt.ylabel('Count')
+    plt.title('Distribution of BMI Categories')
+    plt.show()
+    return fig
+
 
 def sil_Score(n_clusters, data, labels, sill_avg, sill_sample):
     fig, (ax1) = plt.subplots(1, 1)
@@ -380,15 +423,21 @@ with tab2:
         
         st.pyplot(histplot(food_column,top_5_cluster_info[0][0]))
         st.pyplot(histplot(num_profile_column,top_5_cluster_info[0][0]))
+        st.pyplot(plot_bmi_cate(top_5_cluster_info[0][0]))
         
         st.pyplot(health_heatmap(top_5_cluster_info[0][0],health_columns))
         get_excellent_health(top_5_cluster_info[0][0])
         st.write(top_5_cluster_info[0][0][health_columns].sum())
+        
         st.pyplot(health_heatmap(top_5_cluster_info[0][0],age_column))
         get_18_24_age(top_5_cluster_info[0][0])
         st.write(top_5_cluster_info[0][0][age_column].sum())
+        
         st.pyplot(health_heatmap(top_5_cluster_info[0][0],profile_columns))
         st.pyplot(health_heatmap(top_5_cluster_info[0][0],conditions_columns))
+        st.pyplot(health_heatmap(top_5_cluster_info[0][0],checkup_column))
+        get_Checkup_never(top_5_cluster_info[0][0])
+        st.write(top_5_cluster_info[0][0][checkup_column].sum())
             
         
         # Cluster 45
