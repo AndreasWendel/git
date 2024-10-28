@@ -117,7 +117,7 @@ def plot_bmi_cate(df):
 
     # Plot the distribution of BMI categories
     fig = plt.figure(figsize=(10, 6))
-    sns.countplot(data=df, x='BMI_Category', hue='BMI_Category', palette="viridis", order=['Underweight', 'Normal weight', 'Overweight', 'Obesity'], legend=False)
+    sns.countplot(data=df, x='BMI_Category', hue='BMI_Category', palette="viridis", order=['Underweight', 'Normal weight', 'Overweight', 'Obesity'])
     plt.xlabel('BMI Category')
     plt.ylabel('Count')
     plt.title('Distribution of BMI Categories')
