@@ -39,9 +39,9 @@ def histplot(column,df):
         sns.histplot(df[col], kde=True, label=col, bins=15, alpha=0.80)
 
     plt.title("Distribution of Features (Histogram)")
-    plt.xlabel("Consumption Level")
+    plt.xlabel("Value")
     plt.ylabel("Frequency")
-    plt.legend(title="Food Type")
+    plt.legend(title="Feature")
     plt.show()
     return fig
     
