@@ -551,8 +551,6 @@ with tab3:
         df = pd.read_csv(eda_file)
 
         # Display basic info and summary statistics
-        st.subheader("Dataset Information")
-        st.write(df.info())
         
         st.subheader("Summary Statistics")
         st.write(df.describe())
