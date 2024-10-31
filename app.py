@@ -212,12 +212,12 @@ with tab1:
     fried_potato = st.slider("How many times per month do you eat any kind of fried Potatoes", 0, 128, 1)
 
     # General Health
-    general_health = st.selectbox("General Health", ["Very Good", "Good", "Fair", "Poor"])
+    general_health = st.selectbox("General Health", ["Excellent","Very Good", "Good", "Fair", "Poor"])
 
     # Checkup History
     checkup_history = st.selectbox("Last Medical Checkup", 
                                 ["Within the past year", "Within the past 2 years", 
-                                 "Within the past 5 years", "5 or more years ago"])
+                                 "Within the past 5 years", "5 or more years ago","Never"])
 
     # Exercise
     exercise = st.selectbox("Do you exercise regularly?", ["Yes", "No"])
@@ -233,7 +233,7 @@ with tab1:
     # Demographic Information
     sex = st.selectbox("Sex", ["Male", "Female"])
     age_category = st.selectbox("Age Category", 
-                                ["25-29", "30-34", "35-39", "40-44", "45-49", "50-54", 
+                                ["18-24","25-29", "30-34", "35-39", "40-44", "45-49", "50-54", 
                                 "55-59", "60-64", "65-69", "70-74", "75-79", "80+"])
     smoking_history = st.selectbox("Smoking History", ["Yes", "No"])
 
