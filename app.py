@@ -315,6 +315,9 @@ with tab2:
         st.write(data.head())  # Show a preview of the data with clusters
         
         st.write("HDBSCAN is a density-based clustering method that can identify clusters of varying densities as well as detect noise (outliers) in the dataset.")
+        
+        st.image("Image/HDBSCAN example.PNG")
+        
         st.write("KMeans is a clustering method that divides data into a specified number of clusters (K) based on feature similarity.")
 
         # Display the counts for each cluster
@@ -387,9 +390,9 @@ with tab2:
             
         sil_filter = silhouette_df.loc[silhouette_df["Data Points"] > 20, ["Cluster", "Average_Silhouette", "Data Points"]].sort_values(by="Average_Silhouette", ascending=False)
         
-        
+        st.subheader("Clusters to analyze, top Silhouettscore with more than 20 datapoints")
         chosen_5 = sil_filter["Cluster"].head(5).astype(int).tolist()
-        
+        st.write(sil_filter.head(5))
         signi_feature(chosen_5)
         
         
