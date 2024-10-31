@@ -387,7 +387,6 @@ with tab2:
             
         sil_filter = silhouette_df.loc[silhouette_df["Data Points"] > 20, ["Cluster", "Average_Silhouette", "Data Points"]].sort_values(by="Average_Silhouette", ascending=False)
         
-        st.subheader("stop")
         
         chosen_5 = sil_filter["Cluster"].head(5).astype(int).tolist()
         
